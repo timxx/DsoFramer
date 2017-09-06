@@ -1,0 +1,7 @@
+Source/Debug/
+Source/Lib
+Source/dsoframer.VC.VC.opendb
+Source/dsoframer.VC.db
+*.lib
+*.dll
+*.ocx

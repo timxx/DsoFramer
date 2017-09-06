@@ -1,9 +1,9 @@
-/***************************************************************************
+﻿/***************************************************************************
  * MAINENTRY.CPP
  *
  * Main DLL Entry and Required COM Entry Points.
  *
- *  Copyright �1999-2004; Microsoft Corporation. All rights reserved.
+ *  Copyright ©1999-2004; Microsoft Corporation. All rights reserved.
  *  Written by Microsoft Developer Support Office Integration (PSS DSOI)
  * 
  *  This code is provided via KB 311765 as a sample. It is not a formal
@@ -128,7 +128,7 @@ STDAPI DllRegisterServer()
  // Setup the CLSID. This is the most important. If there is a critical failure,
  // we will set HR = GetLastError and return...
     if ((dwret = RegCreateKeyEx(HKEY_CLASSES_ROOT, 
-		"CLSID\\"DSOFRAMERCTL_CLSIDSTR, 0, NULL, 0, KEY_WRITE, NULL, &hk, NULL)) != ERROR_SUCCESS)
+		"CLSID\\" DSOFRAMERCTL_CLSIDSTR, 0, NULL, 0, KEY_WRITE, NULL, &hk, NULL)) != ERROR_SUCCESS)
 	{
 		DsoMemFree(pwszModule);
         return HRESULT_FROM_WIN32(dwret);
@@ -303,11 +303,11 @@ static HRESULT RegRecursiveDeleteKey(HKEY hkParent, LPCSTR pszSubKey)
 STDAPI DllUnregisterServer()
 {
     HRESULT hr;
-    hr = RegRecursiveDeleteKey(HKEY_CLASSES_ROOT, "CLSID\\"DSOFRAMERCTL_CLSIDSTR);
+    hr = RegRecursiveDeleteKey(HKEY_CLASSES_ROOT, "CLSID\\" DSOFRAMERCTL_CLSIDSTR);
     if (SUCCEEDED(hr))
     {
         RegRecursiveDeleteKey(HKEY_CLASSES_ROOT, DSOFRAMERCTL_PROGID);
-        RegRecursiveDeleteKey(HKEY_CLASSES_ROOT, "TypeLib\\"DSOFRAMERCTL_TLIBSTR);
+        RegRecursiveDeleteKey(HKEY_CLASSES_ROOT, "TypeLib\\" DSOFRAMERCTL_TLIBSTR);
     }
 
   // This means the key does not exist (i.e., the DLL 

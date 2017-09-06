@@ -1,9 +1,9 @@
-/***************************************************************************
+﻿/***************************************************************************
  * DSOFDOCOBJ.H
  *
  * DSOFramer: OLE DocObject Site component (used by the control)
  *
- *  Copyright �1999-2004; Microsoft Corporation. All rights reserved.
+ *  Copyright ©1999-2004; Microsoft Corporation. All rights reserved.
  *  Written by Microsoft Developer Support Office Integration (PSS DSOI)
  * 
  *  This code is provided via KB 311765 as a sample. It is not a formal
