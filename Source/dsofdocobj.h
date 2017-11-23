@@ -191,6 +191,7 @@ public:
     STDMETHODIMP  CreateDocObject(IStorage *pstg);
     STDMETHODIMP  CreateFromFile(LPWSTR pwszFile, REFCLSID rclsid, LPBIND_OPTS pbndopts);
     STDMETHODIMP  CreateFromURL(LPWSTR pwszUrlFile, REFCLSID rclsid, LPBIND_OPTS pbndopts, LPWSTR pwszUserName, LPWSTR pwszPassword);
+	STDMETHODIMP  CreateFromStorage(IStorage *pstg, REFCLSID rclsid, LPBIND_OPTS pbndopts);
     STDMETHODIMP  CreateFromRunningObject(LPUNKNOWN punkObj, LPWSTR pwszObjectName, LPBIND_OPTS pbndopts);
     STDMETHODIMP  IPActivateView();
     STDMETHODIMP  IPDeactivateView();
@@ -198,6 +199,7 @@ public:
     STDMETHODIMP  UIDeactivateView();
 	STDMETHODIMP_(BOOL) IsDirty();
     STDMETHODIMP  Save();
+	STDMETHODIMP  SaveToStorage();
     STDMETHODIMP  SaveToFile(LPWSTR pwszFile, BOOL fOverwriteFile);
     STDMETHODIMP  SaveToURL(LPWSTR pwszURL, BOOL fOverwriteFile, LPWSTR pwszUserName, LPWSTR pwszPassword);
     STDMETHODIMP  PrintDocument(LPCWSTR pwszPrinter, LPCWSTR pwszOutput, UINT cCopies, UINT nFrom, UINT nTo, BOOL fPromptUser);

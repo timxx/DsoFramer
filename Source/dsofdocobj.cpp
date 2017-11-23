@@ -505,6 +505,72 @@ STDMETHODIMP CDsoDocObject::CreateFromURL(LPWSTR pwszUrlFile, REFCLSID rclsid, L
 	return hr;
 }
 
+STDMETHODIMP CDsoDocObject::CreateFromStorage(IStorage *pstg, REFCLSID rclsid, LPBIND_OPTS pbndopts)
+{
+	HRESULT			hr = E_FAIL;
+	CLSID           clsid;
+	CLSID           clsidConv;
+	IOleObject      *pole = NULL;
+	IBindCtx		*pbctx = NULL;
+	IMoniker		*pmkfile = NULL;
+	BOOL fLoadFromAltCLSID = (rclsid != GUID_NULL);
+
+	// Sanity check of parameters...
+	if (!pstg || (pbndopts == NULL))
+		return E_INVALIDARG;
+
+	TRACE2("CDsoDocObject::CreateFromStorage(%P, %x)\n", pstg, pbndopts->grfMode);
+
+	// First. we'll try to find the associated CLSID for the given file,
+	// and then set it to the alternate if not found. If we don't have a
+	// CLSID by the end of this, because user didn't specify alternate
+	// and GetClassFile failed, then we error out...
+
+	STATSTG stg = { 0 };
+	if (FAILED(pstg->Stat(&stg, STATFLAG_NONAME)) && !(fLoadFromAltCLSID))
+		return DSO_E_INVALIDSERVER;
+	clsid = stg.clsid;
+
+	// We should try to load from alternate CLSID if provided one...
+	if (fLoadFromAltCLSID)
+		clsid = rclsid;
+
+	// We should also handle auto-convert to start "newest" server...
+	if (SUCCEEDED(OleGetAutoConvert(clsid, &clsidConv)))
+		clsid = clsidConv;
+
+	// Validate that we have a DocObject server...
+	if ((clsid == GUID_NULL) || FAILED(ValidateDocObjectServer(clsid)))
+		return DSO_E_INVALIDSERVER;
+
+	// Create our substorage, and copy the data over to it...
+	if (SUCCEEDED(hr = CreateObjectStorage(clsid)) &&
+		SUCCEEDED(hr = pstg->CopyTo(0, NULL, NULL, m_pstgfile)))
+	{
+		m_pstgfile->Commit(STGC_OVERWRITE);
+
+		// Then create the object from the storage copy...
+		if (SUCCEEDED(hr = CreateDocObject(clsid)))
+		{
+			SAFE_SET_INTERFACE(m_pstgSourceFile, pstg);
+		}
+	}
+
+	// If all went well, we should save file name and whether it opened read-only...
+	if (SUCCEEDED(hr))
+	{
+		m_pwszSourceFile = NULL;
+		m_idxSourceName = CalcDocNameIndex(m_pwszSourceFile);
+		m_fOpenReadOnly = ((pbndopts->grfMode & STGM_WRITE) == 0) &&
+			((pbndopts->grfMode & STGM_READWRITE) == 0);
+	}
+
+	// This will free the OLE server if anything above failed...
+	SAFE_RELEASE_INTERFACE(pole);
+	return hr;
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 // CDsoDocObject::CreateFromRunningObject
 //
@@ -780,7 +846,40 @@ STDMETHODIMP CDsoDocObject::Save()
 	    {
 		    hr = SaveToFile(NULL, TRUE);
 	    }
+		else if (m_pstgSourceFile)
+		{
+			hr = SaveToStorage();
+		}
     }
+
+	return hr;
+}
+
+STDMETHODIMP CDsoDocObject::SaveToStorage()
+{
+	HRESULT hr = S_FALSE;
+	IPersistStorage *pipstg = NULL;
+
+	// Got to have object to save state...
+	if (!m_pole) return E_UNEXPECTED;
+
+	// If we have file storage, ask for IPersist and Save (commit changes)...
+	if ((m_pstgSourceFile) &&
+		SUCCEEDED(hr = m_pole->QueryInterface(IID_IPersistStorage, (void**)&pipstg)))
+	{
+		if (SUCCEEDED(hr = pipstg->Save(m_pstgSourceFile, TRUE)))
+			hr = pipstg->SaveCompleted(NULL);
+
+		hr = m_pstgSourceFile->Commit(STGC_DEFAULT);
+		pipstg->Release();
+	}
+
+	// Go ahead and save the view state if view still active (non-critical)...
+	if ((m_pdocv) && (m_pstmview))
+	{
+		m_pdocv->SaveViewState(m_pstmview);
+		m_pstmview->Commit(STGC_DEFAULT);
+	}
 
 	return hr;
 }

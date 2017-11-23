@@ -81,7 +81,12 @@ library DSOFramer
 		HRESULT CreateNew([in] BSTR ProgIdOrTemplate);
 
 		[id(0x00010004), helpstring("Opens a document from a file, URL, or Automation object.")]
-		HRESULT Open([in] VARIANT Document, [in, optional] VARIANT ReadOnly, [in, optional] VARIANT ProgId, [in, optional] VARIANT WebUsername, [in, optional] VARIANT WebPassword);
+		HRESULT Open([in] VARIANT Document,
+			[in, optional] VARIANT ReadOnly,
+			[in, optional] VARIANT ProgId,
+			[in, optional] VARIANT WebUsername,
+			[in, optional] VARIANT WebPassword,
+			[in, optional] VARIANT_BOOL OpenAsStorage);
 
 		[id(0x00010005), helpstring("Saves the document to specified location or its original location.")]
 		HRESULT Save([in, optional] VARIANT SaveAsDocument, [in, optional] VARIANT OverwriteExisting, [in, optional] VARIANT WebUsername, [in, optional] VARIANT WebPassword);

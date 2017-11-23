@@ -348,7 +348,7 @@ error_out:
 //  with an DocObject server (like *.asp) with the server specified. Also
 //  the username/password are for web access (if Document is a URL).
 //
-STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword)
+STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword, VARIANT_BOOL OpenAsStorage)
 {
 	HRESULT   hr;
 	LPWSTR    pwszDocument  = LPWSTR_FROM_VARIANT(Document);
@@ -410,12 +410,22 @@ STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT
  // Normally user gives a string that is path to file...
     if (pwszDocument)
     {
-	 // Check if we are opening from a URL, and load that way...
-		if (LooksLikeHTTP(pwszDocument))
+		if (OpenAsStorage == VARIANT_TRUE)
+		{
+			IStorage *pstg = NULL;
+			hr = StgOpenStorage(pwszDocument, NULL, STGM_READWRITE | STGM_SHARE_EXCLUSIVE, NULL, 0, &pstg);
+			if (FAILED(hr))
+				return hr;
+
+			hr = m_pDocObjFrame->CreateFromStorage(pstg, clsidAlt, &bopts);
+			pstg->Release();
+		}
+		// Check if we are opening from a URL, and load that way...
+		else if (LooksLikeHTTP(pwszDocument))
 		{
 			hr = m_pDocObjFrame->CreateFromURL(pwszDocument, clsidAlt, &bopts, pwszUserName, pwszPassword);
 		}
-	 // Otherwise, check if it is a local file and open that...
+		// Otherwise, check if it is a local file and open that...
 		else if (FFileExists(pwszDocument))
 		{
 			hr = m_pDocObjFrame->CreateFromFile(pwszDocument, clsidAlt, &bopts);
@@ -424,8 +434,8 @@ STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT
     }
     else if (punk)
     {
-     // If we have an object to load from, try loading it direct...
-        hr = m_pDocObjFrame->CreateFromRunningObject(punk, NULL, &bopts);
+		// If we have an object to load from, try loading it direct...
+		hr = m_pDocObjFrame->CreateFromRunningObject(punk, NULL, &bopts);
     }
     else hr = E_UNEXPECTED; // Unhandled load type??
 
