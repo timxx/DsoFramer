@@ -348,7 +348,7 @@ error_out:
 //  with an DocObject server (like *.asp) with the server specified. Also
 //  the username/password are for web access (if Document is a URL).
 //
-STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword, VARIANT_BOOL OpenAsStorage)
+STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword, VARIANT OpenAsStorage)
 {
 	HRESULT   hr;
 	LPWSTR    pwszDocument  = LPWSTR_FROM_VARIANT(Document);
@@ -356,6 +356,7 @@ STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT
 	LPWSTR    pwszUserName  = LPWSTR_FROM_VARIANT(WebUsername);
 	LPWSTR    pwszPassword  = LPWSTR_FROM_VARIANT(WebPassword);
     BOOL      fOpenReadOnly = BOOL_FROM_VARIANT(ReadOnly, FALSE);
+	BOOL      fOpenAsStg    = BOOL_FROM_VARIANT(OpenAsStorage, FALSE);
 	CLSID     clsidAlt      = GUID_NULL;
 	HCURSOR	  hCur;
     IUnknown* punk = NULL;
@@ -410,7 +411,7 @@ STDMETHODIMP CDsoFramerControl::Open(VARIANT Document, VARIANT ReadOnly, VARIANT
  // Normally user gives a string that is path to file...
     if (pwszDocument)
     {
-		if (OpenAsStorage == VARIANT_TRUE)
+		if (fOpenAsStg)
 		{
 			IStorage *pstg = NULL;
 			hr = StgOpenStorage(pwszDocument, NULL, STGM_READWRITE | STGM_SHARE_EXCLUSIVE, NULL, 0, &pstg);

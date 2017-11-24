@@ -189,7 +189,7 @@ public:
     STDMETHODIMP Activate();
     STDMETHODIMP get_ActiveDocument(IDispatch** ppdisp);
     STDMETHODIMP CreateNew(BSTR ProgIdOrTemplate);
-    STDMETHODIMP Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword, VARIANT_BOOL OpenAsStorage);
+    STDMETHODIMP Open(VARIANT Document, VARIANT ReadOnly, VARIANT ProgId, VARIANT WebUsername, VARIANT WebPassword, VARIANT OpenAsStorage);
     STDMETHODIMP Save(VARIANT SaveAsDocument, VARIANT OverwriteExisting, VARIANT WebUsername, VARIANT WebPassword);
     STDMETHODIMP _PrintOutOld(VARIANT PromptToSelectPrinter);
     STDMETHODIMP Close();

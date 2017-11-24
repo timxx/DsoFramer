@@ -1119,7 +1119,7 @@ STDMETHODIMP_(void) CDsoFramerControl::OnDropFile(HDROP hdrpFile)
         vtMissing.vt = VT_ERROR;
         vtMissing.scode = DISP_E_PARAMNOTFOUND;
 
-        hr = Open(vtFile, vtMissing, vtMissing, vtMissing, vtMissing, VARIANT_FALSE);
+        hr = Open(vtFile, vtMissing, vtMissing, vtMissing, vtMissing, vtMissing);
         if (FAILED(hr)) FAlertUser(hr, vtFile.bstrVal);
         
         VariantClear(&vtFile);
@@ -1697,7 +1697,7 @@ STDMETHODIMP CDsoFramerControl::DoDialogAction(dsoShowDialogType item)
             vT[1].vt = VT_BOOL;	 vT[1].boolVal = (fReadOnly ? VARIANT_TRUE : VARIANT_FALSE);
             vT[2].vt = VT_ERROR; vT[2].scode = DISP_E_PARAMNOTFOUND;
 
-			hr = Open(vT[0], vT[1], vT[2], vT[2], vT[2], VARIANT_FALSE);
+			hr = Open(vT[0], vT[1], vT[2], vT[2], vT[2], vT[2]);
 			SysFreeString(bstr);
         }
         break;

@@ -86,7 +86,7 @@ library DSOFramer
 			[in, optional] VARIANT ProgId,
 			[in, optional] VARIANT WebUsername,
 			[in, optional] VARIANT WebPassword,
-			[in, optional] VARIANT_BOOL OpenAsStorage);
+			[in, optional] VARIANT OpenAsStorage);
 
 		[id(0x00010005), helpstring("Saves the document to specified location or its original location.")]
 		HRESULT Save([in, optional] VARIANT SaveAsDocument, [in, optional] VARIANT OverwriteExisting, [in, optional] VARIANT WebUsername, [in, optional] VARIANT WebPassword);
